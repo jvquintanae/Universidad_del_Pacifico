@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Generador de preguntas para Blackboard de la Universidad del Pacífico</title>
-<meta name="description" content="Convierte preguntas en formato Word a archivos TXT (test) o ZIP (banco de preguntas) importables en Blackboard de la Universidad del Pacífico.">
+<title>Generador de tests Blackboard — Universidad del Pacífico</title>
 <style>
   :root {
     --up-blue: #0A2240;
@@ -24,6 +23,8 @@
     --success-text: #27500A;
     --info-bg: #E6F1FB;
     --info-text: #0C447C;
+    --warn-bg: #FAEEDA;
+    --warn-text: #633806;
     --radius-md: 8px;
     --radius-lg: 12px;
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -31,358 +32,183 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
-  body {
-    font-family: var(--font-sans);
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-  }
-  .container { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
-
-  .header {
-    background: var(--up-blue); color: #fff;
-    border-radius: var(--radius-lg);
-    padding: 22px 26px;
-    display: flex; align-items: center; gap: 18px;
-    margin-bottom: 1.5rem;
-  }
-  .logo {
-    width: 60px; height: 60px; border-radius: 50%;
-    background: #fff;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .logo-text { color: var(--up-blue); font-weight: 600; font-size: 22px; letter-spacing: -0.5px; }
-  .header h1 { font-size: 22px; font-weight: 500; margin: 0; line-height: 1.2; }
-  .header p { font-size: 13px; opacity: 0.78; margin: 4px 0 0; }
-  .pill {
-    font-size: 12px; padding: 4px 12px; border-radius: 999px;
-    background: rgba(255,255,255,0.15); color: #fff; font-weight: 500;
-    flex-shrink: 0; white-space: nowrap;
-  }
-
-  .key-tip {
-    background: var(--up-blue-light);
-    border-left: 3px solid var(--up-blue);
-    padding: 12px 16px;
-    border-radius: var(--radius-md);
-    margin-bottom: 1.25rem;
-    font-size: 13px;
-    color: var(--text);
-    line-height: 1.6;
-  }
+  body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  .site-header { background: var(--up-blue); width: 100%; padding: 18px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .site-header-inner { max-width: 1200px; margin: 0 auto; padding: 0 28px; display: flex; align-items: center; gap: 28px; }
+  .up-logo-img { height: 100px; width: auto; flex-shrink: 0; display: block; }
+  .header-text { padding-left: 28px; border-left: 1px solid rgba(255,255,255,0.3); color: #fff; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .header-text-content { min-width: 0; }
+  .header-text h1 { font-size: 22px; font-weight: 500; margin: 0; line-height: 1.25; letter-spacing: -0.2px; color: #fff; }
+  .header-text p { font-size: 13px; opacity: 0.82; margin: 6px 0 0; color: #fff; }
+  .pill { font-size: 12px; padding: 5px 14px; border-radius: 999px; background: rgba(255,255,255,0.15); color: #fff; font-weight: 500; flex-shrink: 0; white-space: nowrap; }
+  .container { max-width: 880px; margin: 0 auto; padding: 28px 20px 60px; }
+  .key-tip { background: var(--up-blue-light); border-left: 3px solid var(--up-blue); padding: 12px 16px; border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 13px; color: var(--text); line-height: 1.6; }
   .key-tip strong { color: var(--up-blue); }
-  .key-tip code {
-    font-family: var(--font-mono);
-    background: var(--surface);
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-    color: var(--up-blue);
-  }
-
-  details {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 14px 18px;
-    margin-bottom: 1.25rem;
-  }
+  .key-tip code { font-family: var(--font-mono); background: var(--surface); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: var(--up-blue); }
+  details { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 18px; margin-bottom: 1.25rem; }
   details summary { cursor: pointer; font-size: 14px; font-weight: 500; color: var(--up-blue); }
   details[open] summary { margin-bottom: 12px; }
-  .format-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 14px; font-size: 13px; color: var(--text-secondary);
-  }
-  .format-grid pre {
-    background: var(--surface-alt);
-    padding: 10px 12px; border-radius: 6px;
-    font-size: 12px; margin: 4px 0 0;
-    overflow-x: auto; line-height: 1.5;
-    border: 0.5px solid var(--border);
-  }
+  .format-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; font-size: 13px; color: var(--text-secondary); }
+  .format-grid pre { background: var(--surface-alt); padding: 10px 12px; border-radius: 6px; font-size: 12px; margin: 4px 0 0; overflow-x: auto; line-height: 1.5; border: 0.5px solid var(--border); }
   .format-grid strong { color: var(--up-blue); font-weight: 500; }
   .format-grid p { margin: 0; }
   .format-grid .star { color: #C53030; font-weight: 600; }
-
-  .fields {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 14px; margin-bottom: 1.25rem;
-  }
-  .field label {
-    display: block; font-size: 12px;
-    color: var(--text-secondary); margin-bottom: 5px;
-    font-weight: 500;
-  }
-  input.up-input, textarea.up-textarea {
-    width: 100%; padding: 10px 12px;
-    font-size: 14px;
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--surface); color: var(--text);
-    font-family: var(--font-sans);
-  }
-  textarea.up-textarea {
-    font-family: var(--font-mono);
-    font-size: 13px; line-height: 1.6;
-    resize: vertical; min-height: 240px;
-  }
-  input.up-input:focus, textarea.up-textarea:focus {
-    outline: none; border-color: var(--up-blue);
-    box-shadow: 0 0 0 2px var(--up-blue);
-  }
-
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.25rem; }
+  .field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; font-weight: 500; }
+  input.up-input, textarea.up-textarea { width: 100%; padding: 10px 12px; font-size: 14px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--text); font-family: var(--font-sans); }
+  textarea.up-textarea { font-family: var(--font-mono); font-size: 13px; line-height: 1.6; resize: vertical; min-height: 240px; }
+  input.up-input:focus, textarea.up-textarea:focus { outline: none; border-color: var(--up-blue); box-shadow: 0 0 0 2px var(--up-blue); }
+  input.up-input:focus::placeholder, textarea.up-textarea:focus::placeholder { color: transparent; }
   .step { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .step-num {
-    width: 24px; height: 24px; border-radius: 50%;
-    background: var(--up-blue); color: #fff;
-    font-size: 12px; font-weight: 500;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--up-blue); color: #fff; font-size: 12px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .step-title { font-size: 15px; font-weight: 500; margin: 0; }
   .step-hint { font-size: 13px; color: var(--text-secondary); margin: 0 0 12px 34px; }
-
   .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 1.25rem 0; }
-  .btn {
-    background: var(--surface); color: var(--text);
-    border: 0.5px solid var(--border-strong);
-    padding: 9px 18px; font-size: 13px; font-weight: 500;
-    border-radius: var(--radius-md); cursor: pointer;
-    font-family: var(--font-sans); transition: all 0.15s;
-  }
+  .btn { background: var(--surface); color: var(--text); border: 0.5px solid var(--border-strong); padding: 9px 18px; font-size: 13px; font-weight: 500; border-radius: var(--radius-md); cursor: pointer; font-family: var(--font-sans); transition: all 0.15s; }
   .btn:hover { background: var(--surface-alt); }
   .btn:active { transform: scale(0.98); }
-  .btn-primary {
-    background: var(--up-blue); color: #fff;
-    border-color: var(--up-blue);
-  }
+  .btn-primary { background: var(--up-blue); color: #fff; border-color: var(--up-blue); }
   .btn-primary:hover { background: var(--up-blue-hover); }
-  .btn-primary:disabled {
-    background: var(--surface-alt); color: var(--text-tertiary);
-    border-color: var(--border); cursor: not-allowed;
-  }
-
-  .errors {
-    background: var(--danger-bg); color: var(--danger-text);
-    border-radius: var(--radius-md); padding: 12px 16px;
-    font-size: 13px; margin-bottom: 1rem; line-height: 1.7;
-  }
-
-  .download-cards {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 14px; margin: 14px 0 0;
-  }
-  .download-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 16px 18px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .download-card h3 {
-    margin: 0; font-size: 14px; font-weight: 500;
-    color: var(--up-blue);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .download-card .desc {
-    font-size: 12.5px; color: var(--text-secondary);
-    margin: 0; line-height: 1.55; flex: 1;
-  }
-  .download-card .target {
-    font-size: 11px; color: var(--text-tertiary);
-    background: var(--surface-alt);
-    padding: 6px 10px; border-radius: 6px;
-    line-height: 1.5;
-    border: 0.5px solid var(--border);
-  }
+  .btn-primary:disabled { background: var(--surface-alt); color: var(--text-tertiary); border-color: var(--border); cursor: not-allowed; }
+  .errors { background: var(--danger-bg); color: var(--danger-text); border-radius: var(--radius-md); padding: 12px 16px; font-size: 13px; margin-bottom: 1rem; line-height: 1.7; }
+  .download-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0 0; }
+  .download-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+  .download-card h3 { margin: 0; font-size: 14px; font-weight: 500; color: var(--up-blue); display: flex; align-items: center; gap: 8px; }
+  .download-card .desc { font-size: 12.5px; color: var(--text-secondary); margin: 0; line-height: 1.55; flex: 1; }
+  .download-card .target { font-size: 11px; color: var(--text-tertiary); background: var(--surface-alt); padding: 6px 10px; border-radius: 6px; line-height: 1.5; border: 0.5px solid var(--border); }
   .download-card .target strong { color: var(--up-blue); font-weight: 500; }
   .download-card button { margin-top: 4px; }
-  .zip-warning {
-    font-size: 12px;
-    background: #FAEEDA;
-    color: #633806;
-    border-left: 3px solid #BA7517;
-    padding: 8px 12px;
-    border-radius: 6px;
-    line-height: 1.55;
-  }
-  .zip-warning strong { color: #633806; font-weight: 600; }
-  .download-card.is-disabled .desc,
-  .download-card.is-disabled .target { opacity: 0.5; }
-
-  .q-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 14px 16px; margin-bottom: 10px;
-  }
-  .q-head {
-    display: flex; align-items: center; gap: 8px;
-    margin-bottom: 10px; flex-wrap: wrap;
-  }
+  .zip-warning { font-size: 12px; background: var(--warn-bg); color: var(--warn-text); border-left: 3px solid #BA7517; padding: 8px 12px; border-radius: 6px; line-height: 1.55; }
+  .zip-warning strong { color: var(--warn-text); font-weight: 600; }
+  .download-card.is-disabled .desc, .download-card.is-disabled .target { opacity: 0.5; }
+  .q-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 10px; }
+  .q-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
   .q-num { font-size: 12px; color: var(--text-tertiary); font-weight: 500; }
-  .q-type {
-    font-size: 11px; padding: 3px 9px; border-radius: 999px;
-    background: var(--up-blue-light); color: var(--up-blue); font-weight: 500;
-  }
-  .tag-bad {
-    background: var(--danger-bg); color: var(--danger-text);
-    font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 500;
-  }
-  .tag-ok {
-    background: var(--success-bg); color: var(--success-text);
-    font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 500;
-  }
+  .q-type { font-size: 11px; padding: 3px 9px; border-radius: 999px; background: var(--up-blue-light); color: var(--up-blue); font-weight: 500; }
+  .tag-bad { background: var(--danger-bg); color: var(--danger-text); font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 500; }
+  .tag-ok { background: var(--success-bg); color: var(--success-text); font-size: 11px; padding: 3px 9px; border-radius: 999px; font-weight: 500; }
   .q-stem { font-size: 14.5px; font-weight: 500; margin: 0 0 10px; line-height: 1.5; }
-  .opt {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 9px 11px;
-    border-radius: var(--radius-md);
-    cursor: pointer; font-size: 13.5px; line-height: 1.5;
-    border: 0.5px solid transparent;
-    user-select: none; transition: background 0.1s;
-  }
+  .opt { display: flex; align-items: flex-start; gap: 10px; padding: 9px 11px; border-radius: var(--radius-md); cursor: pointer; font-size: 13.5px; line-height: 1.5; border: 0.5px solid transparent; user-select: none; transition: background 0.1s; }
   .opt:hover { background: var(--surface-alt); }
   .opt.is-correct { background: var(--up-blue-light); border-color: var(--up-blue); }
   .opt-letter { font-weight: 500; color: var(--text-secondary); min-width: 18px; }
   .opt.is-correct .opt-letter { color: var(--up-blue); }
-  .opt-check {
-    width: 16px; height: 16px; border-radius: 50%;
-    border: 1.5px solid var(--border-strong);
-    flex-shrink: 0; margin-top: 2px;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--surface);
-  }
+  .opt-check { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--border-strong); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; background: var(--surface); }
   .opt.is-correct .opt-check { background: var(--up-blue); border-color: var(--up-blue); }
-  .opt.is-correct .opt-check::after {
-    content: ''; width: 6px; height: 6px;
-    border-radius: 50%; background: #fff;
-  }
-
+  .opt.is-correct .opt-check::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
   .tf-row { display: flex; gap: 10px; }
-  .tf-btn {
-    flex: 1; padding: 11px;
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--surface);
-    cursor: pointer; font-size: 13.5px; font-weight: 500;
-    font-family: var(--font-sans); color: var(--text);
-    transition: all 0.15s;
-  }
+  .tf-btn { flex: 1; padding: 11px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--surface); cursor: pointer; font-size: 13.5px; font-weight: 500; font-family: var(--font-sans); color: var(--text); transition: all 0.15s; }
   .tf-btn:hover { background: var(--surface-alt); }
   .tf-btn.is-active { background: var(--up-blue); color: #fff; border-color: var(--up-blue); }
   .info-row { font-size: 13px; color: var(--text-secondary); margin: 0; }
-
-  .toast {
-    position: fixed; bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    background: var(--up-blue); color: #fff;
-    padding: 10px 18px; border-radius: var(--radius-md);
-    font-size: 13px; font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.2s, transform 0.2s;
-    z-index: 100;
-  }
-  .toast.is-visible {
-    opacity: 1; transform: translateX(-50%) translateY(-4px);
-  }
-
-  .footer {
-    margin-top: 2rem; padding-top: 1.5rem;
-    border-top: 0.5px solid var(--border);
-    font-size: 12px; color: var(--text-tertiary);
-    text-align: center; line-height: 1.7;
-  }
-  .footer a { color: var(--up-blue); text-decoration: none; }
-  .footer a:hover { text-decoration: underline; }
-
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--up-blue); color: #fff; padding: 10px 18px; border-radius: var(--radius-md); font-size: 13px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 100; }
+  .toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+  .footer { margin-top: 2rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border); font-size: 12px; color: var(--text-tertiary); text-align: center; line-height: 1.7; }
   @media (max-width: 600px) {
     .container { padding: 16px 14px 40px; }
-    .header { padding: 18px 20px; gap: 14px; }
-    .header h1 { font-size: 18px; }
-    .logo { width: 50px; height: 50px; }
-    .logo-text { font-size: 18px; }
-    .fields { grid-template-columns: 1fr; }
-    .format-grid { grid-template-columns: 1fr; }
-    .download-cards { grid-template-columns: 1fr; }
+    .header { padding: 18px 20px; gap: 14px; flex-wrap: wrap; }
+    .header h1 { font-size: 17px; }
+    .up-logo-img { height: 42px; }
+    .header-text { padding-left: 14px; }
+    .fields, .format-grid, .download-cards { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <img src="data:image/png;base64,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" alt="Universidad del Pacífico" class="up-logo-img" />
+    <div class="header-text">
+      <div class="header-text-content">
+        <h1>Generador de tests para Blackboard</h1>
+        <p>Convierte preguntas en formato Word a archivos importables</p>
+      </div>
+      <div id="pill" class="pill">0 preguntas</div>
+    </div>
+  </div>
+</header>
+
 <div class="container">
 
-  <div class="header">
-    <div class="logo"><span class="logo-text">UP</span></div>
-    <div style="flex: 1; min-width: 0;">
-      <h1>Generador de preguntas para Blackboard</h1>
-      <p>Universidad del Pacífico · convierte preguntas en formato Word a archivos importables</p>
-    </div>
-    <div id="pill" class="pill">0 preguntas</div>
-  </div>
-
   <div class="key-tip">
-    <strong>💡 Cómo marcar la respuesta correcta:</strong> agrega un asterisco <code>*</code> antes de la letra de la opción correcta. Ejemplo: <code>*b. Lima</code>. También puedes marcarla después con clic en el paso 2.
+    <strong>📝 Reglas básicas para escribir tus preguntas</strong><br>
+    <span style="font-size: 12.5px; color: var(--text-secondary);">
+      • Numera cada pregunta (<code>1.</code>, <code>2.</code>...) y separa cada una con una <strong>línea en blanco</strong>.<br>
+      • Dependiendo del tipo de pregunta, hay reglas distintas. Revisa los ejemplos abajo.
+    </span>
   </div>
 
   <details>
-    <summary>Cómo escribir las preguntas</summary>
-    <p style="margin: 0 0 12px; color: var(--text-secondary); font-size: 13px;">Escribe las preguntas como en un examen normal de Word. <strong style="color: var(--text);">Separa cada pregunta con una línea en blanco.</strong></p>
+    <summary>Cómo escribir cada tipo de pregunta (con ejemplos)</summary>
     <div class="format-grid">
+
       <div>
-        <strong>Opción múltiple</strong>
+        <strong>🔘 Opción múltiple — una sola correcta</strong>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">Lista las opciones con letras (<code>a.</code>, <code>b.</code>...). Marca la correcta poniendo <span class="star">*</span> antes de la letra.</p>
 <pre>1. ¿Capital del Perú?
 a. Bogotá
 <span class="star">*b. Lima</span>
 c. Quito
 d. Santiago</pre>
       </div>
+
       <div>
-        <strong>Verdadero / Falso</strong>
-<pre>2. La UP fue fundada en 1962.</pre>
-        <p style="margin: 6px 0 0; font-size: 12px;">Debe escribir true or false debajo de la pregunta</p>
+        <strong>☑️ Respuesta múltiple — varias correctas</strong>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">Igual que opción múltiple, pero marca con <span class="star">*</span> <strong>todas</strong> las opciones correctas (dos o más).</p>
+<pre>2. Selecciona los países sudamericanos:
+<span class="star">*a. Perú</span>
+b. España
+<span class="star">*c. Chile</span>
+<span class="star">*d. Brasil</span></pre>
       </div>
+
       <div>
-        <strong>Respuesta múltiple</strong>
-<pre>MA 3. Selecciona las correctas:
-<span class="star">*a. Lima es capital</span>
-b. Cusco está en costa
-<span class="star">*c. Perú está en Sudamérica</span></pre>
-        <p style="margin: 6px 0 0; font-size: 12px;">Marca varias con <code>*</code>.</p>
+        <strong>✅ Verdadero / Falso</strong>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">Empieza la pregunta con <code>TF</code>. En la <strong>línea siguiente</strong>, escribe <code>true</code> si es verdadera o <code>false</code> si es falsa.</p>
+<pre>TF 3. La UP fue fundada en 1962.
+true
+
+TF 4. Lima está en Brasil.
+false</pre>
       </div>
+
       <div>
-        <strong>Ensayo</strong>
-<pre>ESS 4. Explica el costo de
+        <strong>✏️ Ensayo (respuesta abierta)</strong>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">Empieza con <code>ESS</code>. Sin opciones. El estudiante escribirá una respuesta libre que el docente calificará a mano.</p>
+<pre>ESS 5. Explica el costo de
 oportunidad con un ejemplo.</pre>
       </div>
+
       <div>
-        <strong>Completar (FIB)</strong>
-<pre>FIB 5. La capital del Perú es ____.
+        <strong>⌨️ Completar espacio en blanco</strong>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">Empieza con <code>FIB</code>. Marca el espacio con <code>____</code>. En las líneas siguientes lista las respuestas válidas (una por línea — útil para aceptar mayúsculas/minúsculas).</p>
+<pre>FIB 6. La capital del Perú es ____.
 Lima
-lima</pre>
+lima
+LIMA</pre>
       </div>
+
       <div>
-        <strong>Emparejar (MAT)</strong>
-<pre>MAT 6. Empareja país-capital
+        <strong>🔗 Emparejar</strong>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">Empieza con <code>MAT</code>. En las líneas siguientes lista los pares con el formato <code>término = definición</code>.</p>
+<pre>MAT 7. Empareja país con capital
 Perú = Lima
 Chile = Santiago
 Colombia = Bogotá</pre>
-        <p style="margin: 6px 0 0; font-size: 11.5px; color: #633806; background: #FAEEDA; padding: 6px 10px; border-radius: 6px;"><strong>Importante:</strong> si tu test contiene preguntas MAT, solo podrás descargar el archivo .txt. Blackboard no admite preguntas de emparejar en bancos QTI.</p>
       </div>
+
     </div>
   </details>
 
   <div class="fields">
     <div class="field">
       <label for="testname">Nombre del test / banco</label>
-      <input id="testname" class="up-input" type="text" placeholder="Ej. Examen Parcial — Microeconomía 2026-1" value="Test sin título" />
+      <input id="testname" class="up-input" type="text" placeholder="Ej. Examen Parcial — Microeconomía 2026-1" />
     </div>
     <div class="field">
       <label for="course">Curso (opcional)</label>
-      <input id="course" class="up-input" type="text" placeholder="Gestion de la Sostenibilidad Social y Ambiental en las Empresas-C" />
+      <input id="course" class="up-input" type="text" placeholder="Ej. ECO101" />
     </div>
   </div>
 
@@ -390,7 +216,7 @@ Colombia = Bogotá</pre>
     <div class="step-num">1</div>
     <p class="step-title">Pega tus preguntas</p>
   </div>
-  <p class="step-hint">Marca las correctas con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">*</code> antes de la letra. Si olvidas el asterisco, podrás marcar la correcta con un clic en el paso 2.</p>
+  <p class="step-hint">Sigue el formato indicado arriba según el tipo de pregunta. Para opción múltiple y respuesta múltiple puedes marcar la correcta con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">*</code> aquí, o seleccionarla en el paso 2.</p>
 
   <textarea id="input" class="up-textarea" placeholder="1. ¿En qué año se fundó la Universidad del Pacífico?
 a. 1999
@@ -398,7 +224,8 @@ b. 2010
 *c. 1962
 d. 1972
 
-2. La UP está ubicada en Lima.
+TF 2. La UP está ubicada en Lima.
+true
 
 ESS 3. Explica brevemente el concepto de costo de oportunidad."></textarea>
 
@@ -415,7 +242,7 @@ ESS 3. Explica brevemente el concepto de costo de oportunidad."></textarea>
       <div class="step-num">2</div>
       <p class="step-title">Revisa las respuestas correctas</p>
     </div>
-    <p class="step-hint">Las respuestas marcadas con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">*</code> ya aparecen seleccionadas. Si necesitas cambiarlas, haz clic.</p>
+    <p class="step-hint">Las respuestas que ya marcaste en el texto (con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">*</code> o con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">true/false</code>) aparecen seleccionadas. Puedes cambiarlas haciendo clic.</p>
     <div id="questions"></div>
   </div>
 
@@ -429,17 +256,14 @@ ESS 3. Explica brevemente el concepto de costo de oportunidad."></textarea>
     <div class="download-cards">
       <div class="download-card">
         <h3>📄 Archivo .txt</h3>
-        <p class="desc">Para subir directamente como <strong style="color: var(--text);">prueba (Test)</strong>. Genera un test ya armado con todas las preguntas.</p>
-        <div class="target">En Blackboard: <strong>Pruebas → editar Test → Cargar preguntas</strong> · separador <strong>Tabulador</strong></div>
+        <p class="desc">Para subir directamente como <strong style="color: var(--text);">prueba (Test)</strong>. Genera un test ya armado.</p>
+        <div class="target">En Blackboard: <strong>Pruebas → Cargar preguntas</strong> · separador <strong>Tabulador</strong></div>
         <button id="btn-download-txt" class="btn btn-primary" type="button">⬇ Descargar .txt</button>
       </div>
       <div class="download-card" id="zip-card">
-        <h3>📦 Archivo .zip</h3>
-        <p class="desc">Para importar como <strong style="color: var(--text);">banco de preguntas (Pool)</strong>. Las preguntas quedan disponibles para reutilizar en varios tests.</p>
-        <div class="target">En Blackboard: <strong>Pools → Importar QTI Package</strong></div>
-        <div id="zip-warning" class="zip-warning" style="display: none;">
-          <strong>⚠ No disponible:</strong> tu test contiene preguntas de tipo <strong>Emparejar (MAT)</strong>, que Blackboard no admite en bancos de preguntas. Elimínalas o usa el formato <strong>.txt</strong>.
-        </div>
+        <h3>📦 Archivo .zip (Blackboard Pool)</h3>
+        <p class="desc">Para importar como <strong style="color: var(--text);">banco de preguntas</strong>. Reutiliza preguntas en varios tests.</p>
+        <div class="target">En Blackboard Ultra: <strong>Detalles del curso → Bancos de preguntas → Importar</strong></div>
         <button id="btn-download-zip" class="btn btn-primary" type="button">⬇ Descargar .zip</button>
       </div>
     </div>
@@ -451,9 +275,8 @@ ESS 3. Explica brevemente el concepto de costo de oportunidad."></textarea>
 
   <div class="footer">
     Generador de tests para Blackboard · Universidad del Pacífico<br>
-    Inspirado en el generador de Oklahoma Christian University. Funciona 100% en tu navegador — ningún dato se envía a servidores externos.
+    Funciona 100% en tu navegador — ningún dato se envía a servidores externos.
   </div>
-
 </div>
 
 <div id="toast" class="toast"></div>
@@ -471,27 +294,27 @@ a. 1955
 c. 1971
 d. 1985
 
-2. La Universidad del Pacífico se ubica en el distrito de Jesús María, Lima.
+TF 2. La Universidad del Pacífico se ubica en el distrito de Jesús María, Lima.
+true
 
-3. ¿Cuáles de las siguientes son carreras de pregrado en la UP? (Selecciona todas las correctas)
+3. ¿Cuáles de las siguientes son carreras de pregrado en la UP?
 *a. Economía
 b. Medicina
 *c. Administración
 *d. Ingeniería Empresarial
 e. Odontología
 
-ESS 4. Explica brevemente el concepto de costo de oportunidad y proporciona un ejemplo de la vida cotidiana.
+ESS 4. Explica brevemente el concepto de costo de oportunidad.
 
 FIB 5. La capital del Perú es ____.
 Lima
 lima
 LIMA
 
-MAT 6. Empareja cada autor peruano con su obra más conocida.
+MAT 6. Empareja cada autor peruano con su obra.
 Mario Vargas Llosa = La ciudad y los perros
 César Vallejo = Los heraldos negros
-José María Arguedas = Los ríos profundos
-Ciro Alegría = El mundo es ancho y ajeno`;
+José María Arguedas = Los ríos profundos`;
 
   const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const escapeXML = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
@@ -506,76 +329,48 @@ Ciro Alegría = El mundo es ancho y ajeno`;
 
   function parseInput(text){
     const blocks = text.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
-    const qs = [];
-    const errors = [];
-
+    const qs = []; const errors = [];
     blocks.forEach((block, idx) => {
       const lines = block.split('\n').map(l => l.trim()).filter(l => l.length);
       if (!lines.length) return;
-      let first = lines[0];
-      let type = null;
-
+      let first = lines[0]; let type = null;
       const tagMatch = first.match(/^(MC|MA|TF|ESS|FIB|MAT)\s+(.+)$/i);
       if (tagMatch) { type = tagMatch[1].toUpperCase(); first = tagMatch[2].trim(); }
-
       first = first.replace(/^\d+\s*[\.\)]\s*/, '').trim();
       const rest = lines.slice(1);
-
-      // Detect options. Asterisk before the letter (e.g., *b. Lima or * b. Lima) marks correct.
       const optRegex = /^(\*\s*)?([a-zA-Z])\s*[\.\)]\s*(.+)$/;
       const opts = [], otherLines = [];
       rest.forEach(l => {
         const m = l.match(optRegex);
-        if (m) {
-          opts.push({ text: m[3].trim(), correct: !!m[1] });
-        } else {
-          otherLines.push(l);
-        }
+        if (m) opts.push({ text: m[3].trim(), correct: !!m[1] });
+        else otherLines.push(l);
       });
-
       if (!type) {
         if (opts.length >= 2) {
-          // Determine MC vs MA based on number of marked options
           const correctCount = opts.filter(o => o.correct).length;
           type = correctCount > 1 ? 'MA' : 'MC';
-        } else if (rest.length === 0) {
-          type = 'TF';
-        } else {
-          type = 'ESS';
-        }
+        } else if (rest.length === 0) type = 'TF';
+        else type = 'ESS';
       }
-
       if (type === 'MC' || type === 'MA') {
-        if (opts.length < 2) {
-          errors.push(`Pregunta ${idx+1}: necesita al menos 2 opciones (a. b. c. ...)`);
-          return;
-        }
-        // For MC: if more than one is marked, keep only the first marked
+        if (opts.length < 2) { errors.push(`Pregunta ${idx+1}: necesita al menos 2 opciones (a. b. c. ...)`); return; }
         if (type === 'MC') {
           let found = false;
-          opts.forEach(o => {
-            if (o.correct && !found) { found = true; }
-            else if (o.correct && found) { o.correct = false; }
-          });
+          opts.forEach(o => { if (o.correct && !found) found = true; else if (o.correct) o.correct = false; });
         }
         qs.push({ type, stem: first, opts });
       } else if (type === 'TF') {
-        // Try to detect TRUE/FALSE in the line below or in the stem
         let answer = null;
-        const lower = first.toLowerCase();
         if (otherLines.length > 0) {
           const ans = otherLines[0].toLowerCase().trim();
-          if (['true', 'verdadero', 't', 'v'].includes(ans)) answer = true;
-          else if (['false', 'falso', 'f'].includes(ans)) answer = false;
+          if (['true','verdadero','t','v'].includes(ans)) answer = true;
+          else if (['false','falso','f'].includes(ans)) answer = false;
         }
         qs.push({ type, stem: first, answer });
       } else if (type === 'ESS') {
         qs.push({ type, stem: first, model: otherLines.join(' ').trim() });
       } else if (type === 'FIB') {
-        if (otherLines.length < 1) {
-          errors.push(`Pregunta ${idx+1} (FIB): agrega al menos una respuesta válida.`);
-          return;
-        }
+        if (otherLines.length < 1) { errors.push(`Pregunta ${idx+1} (FIB): agrega al menos una respuesta válida.`); return; }
         qs.push({ type, stem: first, answers: otherLines });
       } else if (type === 'MAT') {
         const pairs = []; let bad = false;
@@ -584,21 +379,14 @@ Ciro Alegría = El mundo es ancho y ajeno`;
           if (p.length < 2) { bad = true; return; }
           pairs.push({ term: p[0].trim(), def: p.slice(1).join('=').trim() });
         });
-        if (bad || pairs.length < 2) {
-          errors.push(`Pregunta ${idx+1} (MAT): cada par debe ser "término = definición" y se necesitan al menos 2.`);
-          return;
-        }
+        if (bad || pairs.length < 2) { errors.push(`Pregunta ${idx+1} (MAT): cada par debe ser "término = definición" y se necesitan al menos 2.`); return; }
         qs.push({ type, stem: first, pairs });
       }
     });
-
     return { qs, errors };
   }
 
-  const typeLabels = {
-    MC: 'Opción múltiple', MA: 'Respuesta múltiple', TF: 'Verdadero / Falso',
-    ESS: 'Ensayo', FIB: 'Completar', MAT: 'Emparejar'
-  };
+  const typeLabels = { MC: 'Opción múltiple', MA: 'Respuesta múltiple', TF: 'Verdadero / Falso', ESS: 'Ensayo', FIB: 'Completar', MAT: 'Emparejar' };
 
   function renderQuestions(){
     qList.innerHTML = '';
@@ -609,60 +397,39 @@ Ciro Alegría = El mundo es ancho y ajeno`;
       if (q.type === 'MC' || q.type === 'MA') {
         body = q.opts.map((o, oi) => {
           const letter = String.fromCharCode(97 + oi);
-          return `<div class="opt ${o.correct ? 'is-correct' : ''}" data-q="${i}" data-o="${oi}">
-            <div class="opt-check"></div>
-            <span class="opt-letter">${letter}.</span>
-            <span style="flex: 1;">${escapeHTML(o.text)}</span>
-          </div>`;
+          return `<div class="opt ${o.correct ? 'is-correct' : ''}" data-q="${i}" data-o="${oi}"><div class="opt-check"></div><span class="opt-letter">${letter}.</span><span style="flex: 1;">${escapeHTML(o.text)}</span></div>`;
         }).join('');
       } else if (q.type === 'TF') {
-        body = `<div class="tf-row">
-          <button type="button" class="tf-btn ${q.answer === true ? 'is-active' : ''}" data-q="${i}" data-tf="true">Verdadero</button>
-          <button type="button" class="tf-btn ${q.answer === false ? 'is-active' : ''}" data-q="${i}" data-tf="false">Falso</button>
-        </div>`;
+        body = `<div class="tf-row"><button type="button" class="tf-btn ${q.answer === true ? 'is-active' : ''}" data-q="${i}" data-tf="true">Verdadero</button><button type="button" class="tf-btn ${q.answer === false ? 'is-active' : ''}" data-q="${i}" data-tf="false">Falso</button></div>`;
       } else if (q.type === 'ESS') {
         body = `<p class="info-row">Pregunta abierta. ${q.model ? 'Respuesta modelo: <em>' + escapeHTML(q.model) + '</em>' : 'Sin respuesta modelo.'}</p>`;
       } else if (q.type === 'FIB') {
         body = `<p class="info-row">Respuestas válidas: <strong style="color: var(--text);">${q.answers.map(escapeHTML).join('</strong> · <strong style="color: var(--text);">')}</strong></p>`;
       } else if (q.type === 'MAT') {
         body = '<ul style="margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7;">' +
-          q.pairs.map(p => `<li><strong style="color: var(--text); font-weight: 500;">${escapeHTML(p.term)}</strong> <span style="color: var(--text-tertiary);">→</span> <span style="color: var(--text-secondary);">${escapeHTML(p.def)}</span></li>`).join('') +
-          '</ul>';
+          q.pairs.map(p => `<li><strong style="color: var(--text); font-weight: 500;">${escapeHTML(p.term)}</strong> <span style="color: var(--text-tertiary);">→</span> <span style="color: var(--text-secondary);">${escapeHTML(p.def)}</span></li>`).join('') + '</ul>';
       }
-
       let status = '';
       if (q.type === 'MC' && !q.opts.some(o => o.correct)) status = '<span class="tag-bad">Falta marcar respuesta</span>';
       else if (q.type === 'MA' && !q.opts.some(o => o.correct)) status = '<span class="tag-bad">Falta marcar al menos una</span>';
       else if (q.type === 'TF' && q.answer === null) status = '<span class="tag-bad">Selecciona V o F</span>';
       else status = '<span class="tag-ok">Listo</span>';
-
-      card.innerHTML = `
-        <div class="q-head">
-          <span class="q-num">#${i+1}</span>
-          <span class="q-type">${typeLabels[q.type]}</span>
-          ${status}
-        </div>
-        <p class="q-stem">${escapeHTML(q.stem)}</p>
-        ${body}
-      `;
+      card.innerHTML = `<div class="q-head"><span class="q-num">#${i+1}</span><span class="q-type">${typeLabels[q.type]}</span>${status}</div><p class="q-stem">${escapeHTML(q.stem)}</p>${body}`;
       qList.appendChild(card);
     });
-
     qList.querySelectorAll('.opt').forEach(el => {
       el.addEventListener('click', () => {
         const qi = +el.dataset.q, oi = +el.dataset.o, q = questions[qi];
         if (q.type === 'MC') q.opts.forEach((o, i) => o.correct = (i === oi));
         else q.opts[oi].correct = !q.opts[oi].correct;
-        renderQuestions();
-        updateOutput();
+        renderQuestions(); updateOutput();
       });
     });
     qList.querySelectorAll('.tf-btn').forEach(el => {
       el.addEventListener('click', () => {
         const qi = +el.dataset.q;
         questions[qi].answer = el.dataset.tf === 'true';
-        renderQuestions();
-        updateOutput();
+        renderQuestions(); updateOutput();
       });
     });
   }
@@ -681,110 +448,208 @@ Ciro Alegría = El mundo es ancho y ajeno`;
       } else if (q.type === 'ESS') {
         row.push('ESS', q.stem, q.model || '');
       } else if (q.type === 'FIB') {
-        row.push('FIB', q.stem);
-        q.answers.forEach(a => row.push(a));
+        row.push('FIB', q.stem); q.answers.forEach(a => row.push(a));
       } else if (q.type === 'MAT') {
-        row.push('MAT', q.stem);
-        q.pairs.forEach(p => row.push(p.term, p.def));
+        row.push('MAT', q.stem); q.pairs.forEach(p => row.push(p.term, p.def));
       }
       lines.push(row.map(c => String(c).replace(/\t/g, ' ').replace(/\r?\n/g, ' ')).join('\t'));
     });
     return lines.join('\r\n');
   }
 
-  // ===== QTI XML generation for Pool ZIP =====
-  function buildQtiItem(q, itemId){
-    const stem = escapeXML(q.stem);
-    if (q.type === 'MC') {
-      const correctIdx = q.opts.findIndex(o => o.correct);
-      const labels = q.opts.map((o, i) =>
-        `<response_label ident="${i}"><material><mattext texttype="text/plain">${escapeXML(o.text)}</mattext></material></response_label>`
-      ).join('');
-      return `<item ident="${itemId}" title="Multiple Choice">
-<itemmetadata><bbmd_questiontype>Multiple Choice</bbmd_questiontype></itemmetadata>
-<presentation><flow class="Block"><flow class="QUESTION_BLOCK"><material><mattext texttype="text/plain">${stem}</mattext></material></flow><flow class="RESPONSE_BLOCK"><response_lid ident="response" rcardinality="Single" rtiming="No"><render_choice shuffle="No" minnumber="0" maxnumber="0">${labels}</render_choice></response_lid></flow></flow></presentation>
-<resprocessing scoremodel="SumOfScores"><outcomes><decvar varname="SCORE" vartype="Decimal" defaultval="0" minvalue="0"/></outcomes><respcondition title="correct"><conditionvar><varequal respident="response">${correctIdx}</varequal></conditionvar><setvar variablename="SCORE" action="Set">SCORE.max</setvar></respcondition></resprocessing>
-</item>`;
-    } else if (q.type === 'MA') {
-      const labels = q.opts.map((o, i) =>
-        `<response_label ident="${i}"><material><mattext texttype="text/plain">${escapeXML(o.text)}</mattext></material></response_label>`
-      ).join('');
-      const correctVars = q.opts.map((o, i) => o.correct ? `<varequal respident="response">${i}</varequal>` : '').join('');
-      return `<item ident="${itemId}" title="Multiple Answer">
-<itemmetadata><bbmd_questiontype>Multiple Answer</bbmd_questiontype></itemmetadata>
-<presentation><flow class="Block"><flow class="QUESTION_BLOCK"><material><mattext texttype="text/plain">${stem}</mattext></material></flow><flow class="RESPONSE_BLOCK"><response_lid ident="response" rcardinality="Multiple" rtiming="No"><render_choice shuffle="No" minnumber="0" maxnumber="0">${labels}</render_choice></response_lid></flow></flow></presentation>
-<resprocessing scoremodel="SumOfScores"><outcomes><decvar varname="SCORE" vartype="Decimal" defaultval="0" minvalue="0"/></outcomes><respcondition title="correct"><conditionvar><and>${correctVars}</and></conditionvar><setvar variablename="SCORE" action="Set">SCORE.max</setvar></respcondition></resprocessing>
-</item>`;
-    } else if (q.type === 'TF') {
-      const correctId = q.answer ? 'true' : 'false';
-      return `<item ident="${itemId}" title="True/False">
-<itemmetadata><bbmd_questiontype>True/False</bbmd_questiontype></itemmetadata>
-<presentation><flow class="Block"><flow class="QUESTION_BLOCK"><material><mattext texttype="text/plain">${stem}</mattext></material></flow><flow class="RESPONSE_BLOCK"><response_lid ident="response" rcardinality="Single" rtiming="No"><render_choice shuffle="No" minnumber="0" maxnumber="0"><response_label ident="true"><material><mattext texttype="text/plain">true</mattext></material></response_label><response_label ident="false"><material><mattext texttype="text/plain">false</mattext></material></response_label></render_choice></response_lid></flow></flow></presentation>
-<resprocessing scoremodel="SumOfScores"><outcomes><decvar varname="SCORE" vartype="Decimal" defaultval="0" minvalue="0"/></outcomes><respcondition title="correct"><conditionvar><varequal respident="response">${correctId}</varequal></conditionvar><setvar variablename="SCORE" action="Set">SCORE.max</setvar></respcondition></resprocessing>
-</item>`;
-    } else if (q.type === 'ESS') {
-      return `<item ident="${itemId}" title="Essay">
-<itemmetadata><bbmd_questiontype>Essay</bbmd_questiontype></itemmetadata>
-<presentation><flow class="Block"><flow class="QUESTION_BLOCK"><material><mattext texttype="text/plain">${stem}</mattext></material></flow><flow class="RESPONSE_BLOCK"><response_str ident="response" rcardinality="Single" rtiming="No"><render_fib fibtype="String" prompt="Box" rows="6" columns="60" maxchars="0"><response_label ident="answer" rshuffle="No"/></render_fib></response_str></flow></flow></presentation>
-<resprocessing scoremodel="SumOfScores"><outcomes><decvar varname="SCORE" vartype="Decimal" defaultval="0" minvalue="0"/></outcomes></resprocessing>
-</item>`;
-    } else if (q.type === 'FIB') {
-      const correctConds = q.answers.map(a =>
-        `<varequal respident="response" case="No">${escapeXML(a)}</varequal>`
-      ).join('');
-      return `<item ident="${itemId}" title="Fill in the Blank">
-<itemmetadata><bbmd_questiontype>Fill in the Blank</bbmd_questiontype></itemmetadata>
-<presentation><flow class="Block"><flow class="QUESTION_BLOCK"><material><mattext texttype="text/plain">${stem}</mattext></material></flow><flow class="RESPONSE_BLOCK"><response_str ident="response" rcardinality="Single" rtiming="No"><render_fib fibtype="String" prompt="Box" rows="1" columns="40" maxchars="0"><response_label ident="answer" rshuffle="No"/></render_fib></response_str></flow></flow></presentation>
-<resprocessing scoremodel="SumOfScores"><outcomes><decvar varname="SCORE" vartype="Decimal" defaultval="0" minvalue="0"/></outcomes><respcondition title="correct"><conditionvar><or>${correctConds}</or></conditionvar><setvar variablename="SCORE" action="Set">SCORE.max</setvar></respcondition></resprocessing>
-</item>`;
-    }
-    return '';
+  // ===== Blackboard Native Pool Format (formato Oklahoma) =====
+  // Genera res00001.dat con todas las preguntas en un solo archivo XML
+
+  function isoDateUTC(){
+    const d = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    return `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}Z`;
   }
+
+  function bbDates(now, indent){
+    const sp = ' '.repeat(indent);
+    return `${sp}<DATES>\n${sp}  <CREATED value="${now}" />\n${sp}  <UPDATED value="${now}" />\n${sp}</DATES>`;
+  }
+
+  function bbFlags(){
+    return `      <FLAGS value="true">\n        <ISHTML value="true" />\n        <ISNEWLINELITERAL />\n      </FLAGS>`;
+  }
+
+  function bbFeedback(){
+    return `      <FEEDBACK_WHEN_CORRECT>Correcto</FEEDBACK_WHEN_CORRECT>\n      <FEEDBACK_WHEN_INCORRECT>Incorrecto</FEEDBACK_WHEN_INCORRECT>`;
+  }
+
+  function bbMC(qid, q, now){
+    const answers = q.opts.map((o, i) =>
+`    <ANSWER id="${qid}_a${i+1}" position="${i+1}">
+${bbDates(now, 6)}
+      <TEXT>${escapeXML(o.text)}</TEXT>
+    </ANSWER>`).join('\n');
+    const correctIdx = q.opts.findIndex(o => o.correct);
+    return `  <QUESTION_MULTIPLECHOICE id="${qid}">
+${bbDates(now, 4)}
+    <BODY>
+      <TEXT>${escapeXML(q.stem)}</TEXT>
+${bbFlags()}
+    </BODY>
+${answers}
+    <GRADABLE>
+${bbFeedback()}
+      <CORRECTANSWER answer_id="${qid}_a${correctIdx+1}" />
+    </GRADABLE>
+  </QUESTION_MULTIPLECHOICE>`;
+  }
+
+  function bbMA(qid, q, now){
+    const answers = q.opts.map((o, i) =>
+`    <ANSWER id="${qid}_a${i+1}" position="${i+1}">
+${bbDates(now, 6)}
+      <TEXT>${escapeXML(o.text)}</TEXT>
+    </ANSWER>`).join('\n');
+    const correct = q.opts.map((o, i) => o.correct ? `      <CORRECTANSWER answer_id="${qid}_a${i+1}" />` : '').filter(Boolean).join('\n');
+    return `  <QUESTION_MULTIPLEANSWER id="${qid}">
+${bbDates(now, 4)}
+    <BODY>
+      <TEXT>${escapeXML(q.stem)}</TEXT>
+${bbFlags()}
+    </BODY>
+${answers}
+    <GRADABLE>
+${bbFeedback()}
+${correct}
+    </GRADABLE>
+  </QUESTION_MULTIPLEANSWER>`;
+  }
+
+  function bbTF(qid, q, now){
+    const correctId = q.answer ? `${qid}_a1` : `${qid}_a2`;
+    return `  <QUESTION_TRUEFALSE id="${qid}">
+${bbDates(now, 4)}
+    <BODY>
+      <TEXT>${escapeXML(q.stem)}</TEXT>
+${bbFlags()}
+    </BODY>
+    <ANSWER id="${qid}_a1" position="1">
+${bbDates(now, 6)}
+      <TEXT>true</TEXT>
+    </ANSWER>
+    <ANSWER id="${qid}_a2" position="2">
+${bbDates(now, 6)}
+      <TEXT>false</TEXT>
+    </ANSWER>
+    <GRADABLE>
+${bbFeedback()}
+      <CORRECTANSWER answer_id="${correctId}" />
+    </GRADABLE>
+  </QUESTION_TRUEFALSE>`;
+  }
+
+  function bbESS(qid, q, now){
+    return `  <QUESTION_ESSAY id="${qid}">
+${bbDates(now, 4)}
+    <BODY>
+      <TEXT>${escapeXML(q.stem)}</TEXT>
+${bbFlags()}
+    </BODY>
+  </QUESTION_ESSAY>`;
+  }
+
+  function bbFIB(qid, q, now){
+    const answers = q.answers.map((a, i) =>
+`    <ANSWER id="${qid}_a${i+1}" position="${i+1}">
+${bbDates(now, 6)}
+      <TEXT>${escapeXML(a)}</TEXT>
+    </ANSWER>`).join('\n');
+    return `  <QUESTION_FILLINBLANK id="${qid}">
+${bbDates(now, 4)}
+    <BODY>
+      <TEXT>${escapeXML(q.stem)}</TEXT>
+${bbFlags()}
+    </BODY>
+${answers}
+    <GRADABLE>
+${bbFeedback()}
+    </GRADABLE>
+  </QUESTION_FILLINBLANK>`;
+  }
+
+  function bbMAT(qid, q, now){
+    const answers = q.pairs.map((p, i) =>
+`    <ANSWER id="${qid}_a${i+1}" position="${i+1}">
+${bbDates(now, 6)}
+      <CHOICE>${escapeXML(p.term)}</CHOICE>
+      <MATCH>${escapeXML(p.def)}</MATCH>
+    </ANSWER>`).join('\n');
+    return `  <QUESTION_MATCH id="${qid}">
+${bbDates(now, 4)}
+    <BODY>
+      <TEXT>${escapeXML(q.stem)}</TEXT>
+${bbFlags()}
+    </BODY>
+${answers}
+    <GRADABLE>
+${bbFeedback()}
+    </GRADABLE>
+  </QUESTION_MATCH>`;
+  }
+
+  const bbTypeClass = {
+    MC: 'QUESTION_MULTIPLECHOICE', MA: 'QUESTION_MULTIPLEANSWER',
+    TF: 'QUESTION_TRUEFALSE', ESS: 'QUESTION_ESSAY',
+    FIB: 'QUESTION_FILLINBLANK', MAT: 'QUESTION_MATCH'
+  };
 
   function buildPoolFiles(testName){
-    const poolId = 'pool_' + Date.now();
-    const safeName = escapeXML(testName || 'Banco de preguntas');
-    let supportedCount = 0, skipped = 0;
-    const items = [];
+    const safeTitle = escapeXML(testName || 'Banco de preguntas');
+    const now = isoDateUTC();
+    const valid = []; let skipped = 0;
 
-    questions.forEach((q, i) => {
-      if (q.type === 'MAT') { skipped++; return; }
-      if ((q.type === 'MC' || q.type === 'MA') && !q.opts.some(o => o.correct)) return;
-      if (q.type === 'TF' && q.answer === null) return;
-      const itemId = `q_${String(i+1).padStart(4, '0')}`;
-      const xml = buildQtiItem(q, itemId);
-      if (xml) { items.push(xml); supportedCount++; }
+    questions.forEach(q => {
+      if ((q.type === 'MC' || q.type === 'MA') && !q.opts.some(o => o.correct)) { skipped++; return; }
+      if (q.type === 'TF' && q.answer === null) { skipped++; return; }
+      valid.push(q);
     });
+    if (valid.length === 0) return null;
 
-    const qtiBody = `<?xml version="1.0" encoding="UTF-8"?>
-<questestinterop xmlns="http://www.imsglobal.org/xsd/ims_qtiasiv1p2">
-<assessment ident="${poolId}" title="${safeName}">
-<section ident="root_section">
-${items.join('\n')}
-</section>
-</assessment>
-</questestinterop>`;
+    const listItems = valid.map((q, i) => `    <QUESTION id="q${i+1}" class="${bbTypeClass[q.type]}" />`).join('\n');
+    const blocks = valid.map((q, i) => {
+      const qid = `q${i+1}`;
+      if (q.type === 'MC') return bbMC(qid, q, now);
+      if (q.type === 'MA') return bbMA(qid, q, now);
+      if (q.type === 'TF') return bbTF(qid, q, now);
+      if (q.type === 'ESS') return bbESS(qid, q, now);
+      if (q.type === 'FIB') return bbFIB(qid, q, now);
+      if (q.type === 'MAT') return bbMAT(qid, q, now);
+      return '';
+    }).filter(Boolean).join('\n');
+
+    let poolXml = `<?xml version="1.0" encoding="utf-8"?>
+<POOL>
+  <COURSEID value="IMPORT" />
+  <TITLE value="${safeTitle}" />
+  <DESCRIPTION>
+    <TEXT>Created by the UP Blackboard Quiz Generator</TEXT>
+  </DESCRIPTION>
+${bbDates(now, 2)}
+  <QUESTIONLIST>
+${listItems}
+  </QUESTIONLIST>
+${blocks}
+</POOL>`;
+    // Convertir a CRLF (igual que Oklahoma)
+    poolXml = poolXml.replace(/\r?\n/g, '\r\n');
 
     const manifest = `<?xml version="1.0" encoding="UTF-8"?>
-<manifest identifier="${poolId}_manifest" xmlns="http://www.imsglobal.org/xsd/imscp_v1p1">
-<organizations/>
-<resources>
-<resource identifier="${poolId}" type="assessment/x-bb-qti-pool" file="${poolId}.xml">
-<file href="${poolId}.xml"/>
-</resource>
-</resources>
-</manifest>`;
+<manifest identifier="man00001"><organization default="toc00001"><tableofcontents identifier="toc00001"/></organization><resources><resource baseurl="res00001" file="res00001.dat" identifier="res00001" type="assessment/x-bb-pool"/></resources></manifest>`;
 
-    return {
-      manifest,
-      qtiBody,
-      qtiFilename: `${poolId}.xml`,
-      supportedCount,
-      skipped
-    };
+    const files = [
+      { name: 'imsmanifest.xml', content: manifest },
+      { name: 'res00001.dat', content: poolXml }
+    ];
+    return { files, supportedCount: valid.length, skipped };
   }
 
-  // ===== Minimal ZIP writer (store-only) =====
+  // ===== Minimal ZIP writer (con soporte para carpetas) =====
   let crcTable = null;
   function makeCrcTable(){
     const t = new Uint32Array(256);
@@ -801,85 +666,53 @@ ${items.join('\n')}
     for (let i = 0; i < bytes.length; i++) c = crcTable[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
     return (c ^ 0xFFFFFFFF) >>> 0;
   }
-
   function makeZip(files){
     const enc = new TextEncoder();
-    const fileEntries = [];
-    const centralEntries = [];
+    const fileEntries = []; const centralEntries = [];
     let offset = 0;
-
     files.forEach(f => {
       const nameBytes = enc.encode(f.name);
-      const dataBytes = enc.encode(f.content);
-      const crc = crc32(dataBytes);
+      const dataBytes = f.isFolder ? new Uint8Array(0) : enc.encode(f.content);
+      const crc = f.isFolder ? 0 : crc32(dataBytes);
       const size = dataBytes.length;
-
       const local = new Uint8Array(30 + nameBytes.length);
       const dv = new DataView(local.buffer);
-      dv.setUint32(0, 0x04034b50, true);
-      dv.setUint16(4, 20, true);
-      dv.setUint16(6, 0x0800, true);
-      dv.setUint16(8, 0, true);
-      dv.setUint16(10, 0, true);
-      dv.setUint16(12, 0, true);
-      dv.setUint32(14, crc, true);
-      dv.setUint32(18, size, true);
-      dv.setUint32(22, size, true);
-      dv.setUint16(26, nameBytes.length, true);
-      dv.setUint16(28, 0, true);
+      dv.setUint32(0, 0x04034b50, true); dv.setUint16(4, 20, true); dv.setUint16(6, 0x0800, true);
+      dv.setUint16(8, 0, true); dv.setUint16(10, 0, true); dv.setUint16(12, 0, true);
+      dv.setUint32(14, crc, true); dv.setUint32(18, size, true); dv.setUint32(22, size, true);
+      dv.setUint16(26, nameBytes.length, true); dv.setUint16(28, 0, true);
       local.set(nameBytes, 30);
-
       const fileBlob = new Uint8Array(local.length + dataBytes.length);
-      fileBlob.set(local, 0);
-      fileBlob.set(dataBytes, local.length);
+      fileBlob.set(local, 0); fileBlob.set(dataBytes, local.length);
       fileEntries.push(fileBlob);
-
       const central = new Uint8Array(46 + nameBytes.length);
       const cdv = new DataView(central.buffer);
-      cdv.setUint32(0, 0x02014b50, true);
-      cdv.setUint16(4, 20, true);
-      cdv.setUint16(6, 20, true);
-      cdv.setUint16(8, 0x0800, true);
-      cdv.setUint16(10, 0, true);
-      cdv.setUint16(12, 0, true);
-      cdv.setUint16(14, 0, true);
-      cdv.setUint32(16, crc, true);
-      cdv.setUint32(20, size, true);
-      cdv.setUint32(24, size, true);
-      cdv.setUint16(28, nameBytes.length, true);
-      cdv.setUint16(30, 0, true);
-      cdv.setUint16(32, 0, true);
-      cdv.setUint16(34, 0, true);
-      cdv.setUint16(36, 0, true);
-      cdv.setUint32(38, 0, true);
+      cdv.setUint32(0, 0x02014b50, true); cdv.setUint16(4, 20, true); cdv.setUint16(6, 20, true);
+      cdv.setUint16(8, 0x0800, true); cdv.setUint16(10, 0, true); cdv.setUint16(12, 0, true);
+      cdv.setUint16(14, 0, true); cdv.setUint32(16, crc, true); cdv.setUint32(20, size, true);
+      cdv.setUint32(24, size, true); cdv.setUint16(28, nameBytes.length, true); cdv.setUint16(30, 0, true);
+      cdv.setUint16(32, 0, true); cdv.setUint16(34, 0, true); cdv.setUint16(36, 0, true);
+      // Para carpetas, marcar el atributo externo como directorio (bit 0x10)
+      cdv.setUint32(38, f.isFolder ? 0x10 : 0, true);
       cdv.setUint32(42, offset, true);
       central.set(nameBytes, 46);
       centralEntries.push(central);
-
       offset += fileBlob.length;
     });
-
     const centralSize = centralEntries.reduce((s, e) => s + e.length, 0);
     const centralOffset = offset;
-
     const eocd = new Uint8Array(22);
     const edv = new DataView(eocd.buffer);
-    edv.setUint32(0, 0x06054b50, true);
-    edv.setUint16(4, 0, true);
-    edv.setUint16(6, 0, true);
-    edv.setUint16(8, files.length, true);
-    edv.setUint16(10, files.length, true);
-    edv.setUint32(12, centralSize, true);
-    edv.setUint32(16, centralOffset, true);
+    edv.setUint32(0, 0x06054b50, true); edv.setUint16(4, 0, true); edv.setUint16(6, 0, true);
+    edv.setUint16(8, files.length, true); edv.setUint16(10, files.length, true);
+    edv.setUint32(12, centralSize, true); edv.setUint32(16, centralOffset, true);
     edv.setUint16(20, 0, true);
-
     const totalSize = offset + centralSize + 22;
     const out = new Uint8Array(totalSize);
     let pos = 0;
     fileEntries.forEach(e => { out.set(e, pos); pos += e.length; });
     centralEntries.forEach(e => { out.set(e, pos); pos += e.length; });
     out.set(eocd, pos);
-
     return out;
   }
 
@@ -904,59 +737,31 @@ ${items.join('\n')}
     });
     pill.textContent = `${ready.length} / ${questions.length} listas`;
     step3.style.display = questions.length ? 'block' : 'none';
-
-    // Disable ZIP if there are any MAT questions (Blackboard pools don't support Matching)
-    const hasMAT = questions.some(q => q.type === 'MAT');
-    const zipBtn = $('btn-download-zip');
-    const zipCard = $('zip-card');
-    const zipWarn = $('zip-warning');
-    if (hasMAT) {
-      zipBtn.disabled = true;
-      zipCard.classList.add('is-disabled');
-      zipWarn.style.display = 'block';
-    } else {
-      zipBtn.disabled = false;
-      zipCard.classList.remove('is-disabled');
-      zipWarn.style.display = 'none';
-    }
   }
 
   $('btn-parse').addEventListener('click', () => {
     const { qs, errors } = parseInput(inp.value);
-    if (errors.length) {
-      errs.style.display = 'block';
-      errs.innerHTML = errors.map(e => `<div>• ${escapeHTML(e)}</div>`).join('');
-    } else { errs.style.display = 'none'; }
+    if (errors.length) { errs.style.display = 'block'; errs.innerHTML = errors.map(e => `<div>• ${escapeHTML(e)}</div>`).join(''); }
+    else { errs.style.display = 'none'; }
     questions = qs;
     if (qs.length) {
-      step2.style.display = 'block';
-      renderQuestions();
-      updateOutput();
+      step2.style.display = 'block'; renderQuestions(); updateOutput();
       setTimeout(() => step2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
     } else {
-      step2.style.display = 'none';
-      step3.style.display = 'none';
-      pill.textContent = '0 preguntas';
+      step2.style.display = 'none'; step3.style.display = 'none'; pill.textContent = '0 preguntas';
     }
   });
-
-  $('btn-example').addEventListener('click', () => {
-    inp.value = example;
-    $('btn-parse').click();
-  });
+  $('btn-example').addEventListener('click', () => { inp.value = example; $('btn-parse').click(); });
   $('btn-clear').addEventListener('click', () => {
     inp.value = ''; questions = [];
     step2.style.display = 'none'; step3.style.display = 'none';
-    errs.style.display = 'none'; pill.textContent = '0 preguntas';
-    inp.focus();
+    errs.style.display = 'none'; pill.textContent = '0 preguntas'; inp.focus();
   });
   $('btn-copy-tsv').addEventListener('click', async () => {
     const tsv = buildTSV();
     if (!tsv) { showToast('No hay preguntas listas'); return; }
-    try {
-      await navigator.clipboard.writeText(tsv);
-      showToast('✓ TSV copiado');
-    } catch(e) { showToast('No se pudo copiar'); }
+    try { await navigator.clipboard.writeText(tsv); showToast('✓ TSV copiado'); }
+    catch(e) { showToast('No se pudo copiar'); }
   });
   $('btn-download-txt').addEventListener('click', () => {
     const tsv = buildTSV();
@@ -966,20 +771,10 @@ ${items.join('\n')}
     showToast('✓ Archivo .txt descargado');
   });
   $('btn-download-zip').addEventListener('click', () => {
-    if (questions.some(q => q.type === 'MAT')) {
-      showToast('ZIP no disponible: hay preguntas MAT');
-      return;
-    }
     const testName = $('testname').value || 'Banco de preguntas';
-    const { manifest, qtiBody, qtiFilename, supportedCount, skipped } = buildPoolFiles(testName);
-    if (supportedCount === 0) {
-      showToast('No hay preguntas válidas para el ZIP');
-      return;
-    }
-    const zipBytes = makeZip([
-      { name: 'imsmanifest.xml', content: manifest },
-      { name: qtiFilename, content: qtiBody }
-    ]);
+    const result = buildPoolFiles(testName);
+    if (!result || result.supportedCount === 0) { showToast('No hay preguntas válidas para el ZIP'); return; }
+    const zipBytes = makeZip(result.files);
     const blob = new Blob([zipBytes], { type: 'application/zip' });
     const name = safeFilename(testName);
     downloadBlob(blob, name + '.zip', 'application/zip');
