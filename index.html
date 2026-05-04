@@ -279,10 +279,6 @@ ESS 3. Explica brevemente el concepto de costo de oportunidad."></textarea>
         <button id="btn-download-zip" class="btn btn-primary" type="button">⬇ Descargar .zip</button>
       </div>
     </div>
-
-    <div class="actions" style="margin-top: 12px;">
-      <button id="btn-copy-tsv" class="btn" type="button">Copiar TSV al portapapeles</button>
-    </div>
   </div>
 
 </div>
@@ -781,12 +777,6 @@ ${blocks}
     inp.value = ''; questions = [];
     step2.style.display = 'none'; step3.style.display = 'none';
     errs.style.display = 'none'; pill.textContent = '0 preguntas'; inp.focus();
-  });
-  $('btn-copy-tsv').addEventListener('click', async () => {
-    const tsv = buildTSV();
-    if (!tsv) { showToast('No hay preguntas listas'); return; }
-    try { await navigator.clipboard.writeText(tsv); showToast('✓ TSV copiado'); }
-    catch(e) { showToast('No se pudo copiar'); }
   });
   $('btn-download-txt').addEventListener('click', () => {
     const tsv = buildTSV();
