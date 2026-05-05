@@ -56,7 +56,10 @@
   .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.25rem; }
   .field label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; font-weight: 500; }
   input.up-input, textarea.up-textarea { width: 100%; padding: 10px 12px; font-size: 14px; border: 0.5px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--text); font-family: var(--font-sans); }
-  textarea.up-textarea { font-family: var(--font-mono); font-size: 13px; line-height: 1.6; resize: vertical; min-height: 240px; }
+  textarea.up-textarea { font-family: var(--font-mono); font-size: 13px; line-height: 1.6; resize: vertical; min-height: 240px; transition: border-color 0.25s, background 0.25s, box-shadow 0.25s; }
+  textarea.up-textarea.is-valid { border-color: #2D6A1F; background: #F4FAEF; box-shadow: 0 0 0 2px rgba(45, 106, 31, 0.15); }
+  textarea.up-textarea.is-invalid { border-color: #C53030; background: #FDF4F4; box-shadow: 0 0 0 2px rgba(197, 48, 48, 0.15); }
+  textarea.up-textarea.is-valid:focus, textarea.up-textarea.is-invalid:focus { box-shadow: 0 0 0 2px var(--up-blue); }
   input.up-input:focus, textarea.up-textarea:focus { outline: none; border-color: var(--up-blue); box-shadow: 0 0 0 2px var(--up-blue); }
   input.up-input:focus::placeholder, textarea.up-textarea:focus::placeholder { color: transparent; }
   .step { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
@@ -509,8 +512,10 @@ José María Arguedas = Los ríos profundos`;
         if (opts.length >= 2) {
           const correctCount = opts.filter(o => o.correct).length;
           type = correctCount > 1 ? 'MA' : 'MC';
-        } else if (rest.length === 0) type = 'TF';
-        else type = 'ESS';
+        } else {
+          errors.push(`Pregunta ${idx+1}: no se reconoce el tipo. Si es opción múltiple, agrega opciones (a. b. c. ...). Si es otro tipo, empieza con la etiqueta correspondiente: TF (verdadero/falso), ESS (ensayo), FIB (completar) o MAT (emparejar).`);
+          return;
+        }
       }
       if (type === 'MC' || type === 'MA') {
         if (opts.length < 2) { errors.push(`Pregunta ${idx+1}: necesita al menos 2 opciones (a. b. c. ...)`); return; }
@@ -917,6 +922,15 @@ ${blocks}
     if (errors.length) { errs.style.display = 'block'; errs.innerHTML = errors.map(e => `<div>• ${escapeHTML(e)}</div>`).join(''); }
     else { errs.style.display = 'none'; }
     questions = qs;
+    // Feedback visual en el textarea
+    inp.classList.remove('is-valid', 'is-invalid');
+    if (inp.value.trim() === '') {
+      // textarea vacío: ningún estado
+    } else if (errors.length > 0 || qs.length === 0) {
+      inp.classList.add('is-invalid');
+    } else {
+      inp.classList.add('is-valid');
+    }
     if (qs.length) {
       step2.style.display = 'block'; renderQuestions(); updateOutput();
       setTimeout(() => step2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
@@ -924,9 +938,14 @@ ${blocks}
       step2.style.display = 'none'; step3.style.display = 'none'; pill.textContent = '0 preguntas';
     }
   });
+  // Resetear estado visual cuando el usuario edita
+  inp.addEventListener('input', () => {
+    inp.classList.remove('is-valid', 'is-invalid');
+  });
   $('btn-example').addEventListener('click', () => { inp.value = example; $('btn-parse').click(); });
   $('btn-clear').addEventListener('click', () => {
     inp.value = ''; questions = [];
+    inp.classList.remove('is-valid', 'is-invalid');
     step2.style.display = 'none'; step3.style.display = 'none';
     errs.style.display = 'none'; pill.textContent = '0 preguntas'; inp.focus();
   });
