@@ -172,9 +172,9 @@
     <strong>Información básica para escribir tus preguntas</strong><br>
     <span style="font-size: 12.5px; color: var(--text-secondary);">
       • Numera cada pregunta (<code>1.</code>, <code>1)</code>...) y separa cada una con una <strong>línea en blanco</strong>.<br>
-      • Las respuestas comienzan con una letra seguida de un punto o paréntesis.<br>
-      • Si ingresas preguntas/respuestas sin números/letras, entonces las preguntas deben estar etiquetadas (MC para opción múltiple, TF para verdadero/falso, MA para respuesta múltiple, etc.) Dependiendo del tipo de pregunta, hay reglas distintas. Revise los ejemplos abajo.<br>
-      • Evita dejar filas en blanco, excepto cuando pases a la siguiente pregunta o respuesta.
+      • En opción múltiple/respuesta múltiple, las opciones deben llevar letra (<code>a.</code>, <code>b)</code>...). Si prefieres escribirlas sin letra, antepone la etiqueta <code>MC</code> u <code>MA</code> al enunciado y marca la correcta con <code>*</code> al inicio de la línea.<br>
+      • Para verdadero/falso (<code>TF</code>), ensayo (<code>ESS</code>), completar (<code>FIB</code>) o emparejar (<code>MAT</code>), siempre etiqueta el enunciado. Revisa los ejemplos abajo.<br>
+      • Evita dejar filas en blanco, excepto cuando pases a la siguiente pregunta.
     </span>
   </div>
 
@@ -523,7 +523,22 @@ José María Arguedas = Los ríos profundos`;
         }
       }
       if (type === 'MC' || type === 'MA') {
-        if (opts.length < 2) { errors.push(`Pregunta ${idx+1}: necesita al menos 2 opciones (a. b. c. ...)`); return; }
+        // Si la etiqueta MC/MA fue explícita y no se detectaron opciones con letras,
+        // tratar cada línea restante como una opción (correcta si empieza con *)
+        const tagWasExplicit = !!tagMatch;
+        if (opts.length < 2 && tagWasExplicit && otherLines.length >= 2) {
+          otherLines.forEach(l => {
+            const starMatch = l.match(/^\*\s*(.+)$/);
+            if (starMatch) opts.push({ text: starMatch[1].trim(), correct: true });
+            else opts.push({ text: l.trim(), correct: false });
+          });
+        }
+        if (opts.length < 2) {
+          const hint = tagWasExplicit
+            ? `Pregunta ${idx+1} (${type}): necesita al menos 2 opciones. Puedes escribirlas con letras (a. b. c.) o sin letras (una opción por línea, marcando la correcta con * al inicio).`
+            : `Pregunta ${idx+1}: necesita al menos 2 opciones (a. b. c. ...). Si prefieres escribirlas sin letras, antepone MC o MA al enunciado.`;
+          errors.push(hint); return;
+        }
         if (type === 'MC') {
           let found = false;
           opts.forEach(o => { if (o.correct && !found) found = true; else if (o.correct) o.correct = false; });
@@ -627,7 +642,7 @@ José María Arguedas = Los ríos profundos`;
     return lines.join('\r\n');
   }
 
-  // ===== Blackboard Native Pool Format =====
+  // ===== Blackboard Native Pool Format (formato Oklahoma) =====
   // Genera res00001.dat con todas las preguntas en un solo archivo XML
 
   function isoDateUTC(){
