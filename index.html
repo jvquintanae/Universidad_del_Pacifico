@@ -216,14 +216,13 @@ false</pre>
 
       <div>
         <strong>✏️ Ensayo (respuesta abierta)</strong>
-        <p style="margin: 4px 0 0; font-size: 12.5px;">Empieza con <code>ESS</code>. Sin opciones. El estudiante escribirá una respuesta libre que el docente calificará a mano.</p>
-<pre>ESS 5. Explica el costo de
-oportunidad con un ejemplo.</pre>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">La pregunta o indicación debe comenzar con<code>ESS</code>. El estudiante debe escribir una respuesta libre que el docente calificará a mano.</p>
+<pre>ESS 5. Explica el costo de oportunidad con un ejemplo.</pre>
       </div>
 
       <div>
         <strong>⌨️ Completar espacio en blanco</strong>
-        <p style="margin: 4px 0 0; font-size: 12.5px;">Empieza con <code>FIB</code>. Marca el espacio con <code>____</code>. En las líneas siguientes lista las respuestas válidas (una por línea — útil para aceptar mayúsculas/minúsculas).</p>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">Se debe empezar con <strong>FIB</strong>. Marca el espacio donde irá la respuesta con <code>____</code>. En las líneas siguientes, lista las respuestas válidas una por línea.</p>
 <pre>FIB 6. La capital del Perú es ____.
 Lima
 lima
@@ -232,7 +231,7 @@ LIMA</pre>
 
       <div>
         <strong>🔗 Emparejar</strong>
-        <p style="margin: 4px 0 0; font-size: 12.5px;">Empieza con <code>MAT</code>. En las líneas siguientes lista los pares con el formato <code>término = definición</code>.</p>
+        <p style="margin: 4px 0 0; font-size: 12.5px;">Se debe empezar con <code>MAT</code>. En las líneas siguientes, lista los pares con el formato <code>término = definición</code>.</p>
 <pre>MAT 7. Empareja país con capital
 Perú = Lima
 Chile = Santiago
@@ -245,19 +244,19 @@ Colombia = Bogotá</pre>
   <div class="fields">
     <div class="field">
       <label for="testname">Nombre del examen</label>
-      <input id="testname" class="up-input" type="text" placeholder="Ej. Control de Lectura N°1" />
+      <input id="testname" class="up-input" type="text" placeholder="Ejem. Control de Lectura N°1" />
     </div>
     <div class="field">
       <label for="course">Curso (opcional)</label>
-      <input id="course" class="up-input" type="text" placeholder="Ej. Economia General I" />
+      <input id="course" class="up-input" type="text" placeholder="Ejem. Economia General I" />
     </div>
   </div>
 
   <div class="step">
     <div class="step-num">1</div>
-    <p class="step-title">Pega tus preguntas</p>
+    <p class="step-title">Escribe las preguntas</p>
   </div>
-  <p class="step-hint">Sigue el formato indicado arriba según el tipo de pregunta. Para opción múltiple y respuesta múltiple puedes marcar la correcta con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">*</code> aquí, o seleccionarla en el paso 2.</p>
+  <p class="step-hint">Sigue los formatos indicados en los ejemplos según el tipo de pregunta. Para las preguntas de opción múltiple puedes marcar la respuesta correcta con * o seleccionarla en el paso 2.  <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">*</code> aquí, o seleccionarla en el paso 2.</p>
 
   <textarea id="input" class="up-textarea" placeholder="1. ¿En qué año se fundó la Universidad del Pacífico?
 a. 1999
@@ -283,7 +282,7 @@ ESS 3. Explica brevemente el concepto de costo de oportunidad."></textarea>
       <div class="step-num">2</div>
       <p class="step-title">Revisa las respuestas correctas</p>
     </div>
-    <p class="step-hint">Las respuestas que ya marcaste en el texto (con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">*</code> o con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">true/false</code>) aparecen seleccionadas. Puedes cambiarlas haciendo clic.</p>
+    <p class="step-hint">En el caso de las preguntas de opción múltiple y verdadero/falso, las respuestas que marcaste en el texto (con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">*</code> o con <code style="background: var(--up-blue-light); color: var(--up-blue); font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px;">true/false</code>) aparecen seleccionadas. Puedes modificarlas en este paso haciendo clic en otra opción.</p>
     <div id="questions"></div>
   </div>
 
@@ -292,7 +291,7 @@ ESS 3. Explica brevemente el concepto de costo de oportunidad."></textarea>
       <div class="step-num">3</div>
       <p class="step-title">Descarga el archivo</p>
     </div>
-    <p class="step-hint">Elige el formato según cómo quieras usar las preguntas en Blackboard.</p>
+    <p class="step-hint">Elige el formato requerido para tus preguntas en Blackboard.</p>
 
     <div id="generated-banner" class="generated-banner">
       <span class="generated-banner-icon">✓</span>
@@ -308,7 +307,7 @@ ESS 3. Explica brevemente el concepto de costo de oportunidad."></textarea>
       </div>
       <div class="download-card" id="zip-card">
         <h3>📦 Archivo .zip (Banco de preguntas)</h3>
-        <p class="desc">Para importar como <strong style="color: var(--text);">banco de preguntas</strong>. Reutiliza preguntas en varios exámenes.</p>
+        <p class="desc">Para importar como <strong style="color: var(--text);">banco de preguntas</strong>.</p>
         <button id="btn-download-zip" class="btn btn-primary" type="button">⬇ Descargar .zip</button>
         <button class="help-btn-link" id="btn-help-zip" type="button">📖 ¿Cómo importar el archivo a Blackboard?</button>
       </div>
